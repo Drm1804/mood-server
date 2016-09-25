@@ -16,5 +16,5 @@ const checkPass = function(loginUser, dataUser){
 
 
 module.exports = {
-  checkPass:checkPass
+    checkPass:checkPass
 };

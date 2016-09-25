@@ -8,10 +8,8 @@ var uid = require('rand-token').uid;
 const secretKey = config.get('session').secret;
 
 
-
 const checkToken = function (req, res, next) {
     if (req.headers.authorization) {
-        console.log(req.headers.authorization);
         next();
     } else {
         res.send(401, 'Unauthorized')
@@ -21,25 +19,22 @@ const checkToken = function (req, res, next) {
 
 const createToken = function (req, res, user) {
 
-    let token  = new TokenModel({
+    let token = new TokenModel({
         userId: user.username,
         token: uid(16),
         claims: []
     });
 
 
-    return token.save()
-        .then(function(resp){
-            return resp.token
-        },
-        function(resp){
-            console.log('Error');
-            console.log(resp);
-        })
+    return token.save();
+};
 
+const removeToken = function (req, res) {
+    return TokenModel.remove({"token": req.headers.authorization})
 };
 
 module.exports = {
     checkToken: checkToken,
+    removeToken: removeToken,
     createToken: createToken
 };

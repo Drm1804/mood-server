@@ -3,7 +3,7 @@
 const app = require('express').Router();
 const UserModel = require('./mongoose').UserModel;
 const token = require('../token');
-const pass = require('../password');
+const pass = require('../lib/password');
 const crypto = require('crypto');
 const config = require('../config');
 const secretKey = config.get('session').secret;
@@ -52,8 +52,12 @@ app.post('/login', function (req, res) {
             let checkPass = pass.checkPass(userData, user);
             if (checkPass) {
                 token.createToken(req, res, user)
-                    .then(function(resp){
+                    .then(function (resp) {
                         res.send('200', {'token': resp});
+                    }, function(){
+                        res.statusCode = 500;
+                        res.send({error: 'Server error'});
+                        console.error('Internal error(%d): %s', res.statusCode, resp.message);
                     });
             } else {
                 res.send(401, 'Введенные данные неверны');
@@ -62,6 +66,19 @@ app.post('/login', function (req, res) {
             res.statusCode = 500;
             res.send({error: 'Server error'});
             console.error('Internal error(%d): %s', res.statusCode, err.message);
+        })
+
+});
+
+app.post('/logout', token.checkToken, function (req, res) {
+
+    token.removeToken(req, res)
+        .then(function () {
+            res.send(200, {status: 'OK'})
+        }, function(){
+            res.statusCode = 500;
+            res.send({error: 'Server error'});
+            console.error('Internal error(%d): %s', res.statusCode, resp.message);
         })
 
 });
