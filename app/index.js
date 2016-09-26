@@ -5,6 +5,8 @@ const config = require('./config');
 const port = config.get('port');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const usersRouter = require('./users/router');
+const moodsRouter = require('./mood/router');
 
 const dbConnect = config.get('db').connection;
 
@@ -32,7 +34,8 @@ app.use(function(req, res, next){
 
 });
 
-app.use('/api', require('./users/router'));
+app.use('/api', usersRouter);
+app.use('/api', moodsRouter);
 
 app.listen(port);
 

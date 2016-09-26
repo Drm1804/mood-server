@@ -15,6 +15,8 @@ app.get('/users', token.checkToken, function (req, res, next) {
     });
 });
 
+
+// Добавление пользователя
 app.post('/user', function (req, res, next) {
 
     const hashPass = crypto.createHmac('sha256', secretKey)
