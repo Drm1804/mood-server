@@ -2,18 +2,25 @@
 const crypto = require('crypto');
 const config = require('../config');
 const TokenModel = require('./mongoose').AccessTokenModel;
-var uid = require('rand-token').uid;
+const uid = require('rand-token').uid;
 
 
 const secretKey = config.get('session').secret;
 
 
 const checkToken = function (req, res, next) {
-    if (req.headers.authorization) {
-        next();
-    } else {
+    const query = TokenModel.find({token: req.headers.authorization});
+    const promise = query.exec();
+
+    return promise.then(function(resp){
+        if(resp.length > 0){
+            next();
+        } else {
+            res.send(401, 'Unauthorized')
+        }
+    }, function(){
         res.send(401, 'Unauthorized')
-    }
+    });
 
 };
 
